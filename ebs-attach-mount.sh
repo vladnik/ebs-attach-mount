@@ -7,10 +7,6 @@ key="$1"
 
 # Parse arguments
 case $key in
-  -v|--volume-id)
-  VOLUME="$2"
-  shift # past argument
-  ;;
   -m|--mount-point)
   MOUNT="$2"
   shift # past argument
@@ -33,6 +29,9 @@ function detect_free_block_device {
     fi
   done
 }
+
+VOLUME_NAME=$ECS_CLUSTER-$CONTAINER
+$VOLUME=$(aws ec2 describe-volumes --region us-west-1 --filters Name=tag-key,Values=Name Name=tag-value,Values=$VOLUME_NAME --query 'Volumes[0].VolumeId')
 
 # Attach and mount volume
 function attach_and_mount_volume {
